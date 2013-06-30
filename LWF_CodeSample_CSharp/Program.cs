@@ -8,7 +8,7 @@ namespace LWF_CodeSample_CSharp
     {
         static void Main(string[] args)
         {
-            // Convert hex strings to UTF-8 characters
+            // Convert hex strings to UTF-8 strings
 
             // First hex string
             string hexstring1 = "5765204d616b652054756d6d69657320486170707921";
