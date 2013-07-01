@@ -11,19 +11,44 @@ namespace LWF_CodeSample_CSharp
             // Convert hex strings to UTF-8 strings
 
             // First hex string
-            string hexstring1 = "5765204d616b652054756d6d69657320486170707921";
-            Console.WriteLine(GetUTF8StringFromHexString(hexstring1) + "\n");
+            string hexstring1 = "5765204d616b652054756d6d69657320486170707921";            
 
             // More complex hex string
-            string hexstring2 = "e299a5205765204d616b652054756d6d792048617070792120e299a5";
+            string hexstring2 = "e299a5205765204d616b652054756d6d792048617070792120e299a5"; 
+
+            // Version 1
+            // Wrote this C# version BEFORE wrote Ruby version.
+            // Traverses hex string character by character encoding to UTF-8 as it goes.
+            // This consists of evaluating first bytes to determine number of bytes in sequence for each UTF-8 character
+            // and accumulating and converting the byte sequences for each character, then adding to output string.
+            Console.WriteLine(GetUTF8StringFromHexString(hexstring1) + "\n");
             Console.WriteLine(GetUTF8StringFromHexString(hexstring2) + "\n");
 
-            //// Uncomment to demonstrate error handling
-            //// hex string with error (81)--..
-            ////                             ..
-            //string hexstring3 = "e299a520578165204d616b652054756d6d792048617070792120e299a5";
-            ////                             ..
-            //Console.WriteLine(GetUTF8StringFromHexString(hexstring3) + "\n");
+            // Version 2
+            // Wrote this C# version AFTER wrote Ruby version.
+            // Note this only calls PackHex().            
+            // After learning the value of the Ruby pack method, this approach converts the entire string first
+            // to an array of bytes, then UTF-8 encodes the entire array.
+            Console.WriteLine(Encoding.UTF8.GetString(PackHex(hexstring1)) + "\n");
+            Console.WriteLine(Encoding.UTF8.GetString(PackHex(hexstring2)) + "\n");
+        }
+
+        /// <summary>
+        /// Port of Ruby pack method for converting strings to array of bytes
+        /// </summary>
+        /// <param name="hexstring">The whole string of hex being encoded</param>
+        /// <returns>The input string converted to an array of bytes</returns>
+        static byte[] PackHex(string hexstring)
+        {
+            List<byte> hexBytes = new List<byte>();
+            for (int i = 0; i < hexstring.Length; i += 2)
+            {
+                string byteString = hexstring.Substring(i, 2);
+                byte byteHex = Convert.ToByte(byteString, 16);
+                hexBytes.Add(byteHex);
+            }
+
+            return hexBytes.ToArray();
         }
 
         /// <summary>
